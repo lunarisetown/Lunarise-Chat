@@ -1,415 +1,607 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Lunarise chat</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>LUNARISE CHAT GENERATOR</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@800&display=swap" rel="stylesheet">
-
+    <title>LUNARISE PREMIUM CHAT ENGINE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <style>
+        :root {
+            --blue-bright: #007bff;
+            --bg: #f4f6f9;
+            --panel: #ffffff;
+            --text-main: #1a1a1a;
+            --border: #eeeeee;
+            --input-bg: #ffffff;
+        }
 
-        :root { --blue-bright: #007bff; --bg: #ffffff; --panel: #fdfdfd; }
-
+        [data-global-theme="dark"] {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --text-main: #f8fafc;
+            --border: #334155;
+            --input-bg: #0f172a;
+        }
         
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1a1a1a; margin: 0; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
-
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
         
-
-        /* JUDUL & SUB-JUDUL */
-
-        .brand-container { text-align: center; margin-bottom: 50px; }
-
+        .brand-container { text-align: center; margin-bottom: 40px; }
         h1.brand { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 2.8rem; letter-spacing: -1.5px; margin: 0; color: var(--blue-bright); text-transform: uppercase; }
-
         .highlight-oval { display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0, 123, 255, 0.1); color: var(--blue-bright); font-weight: 600; font-size: 1rem; margin-top: 10px; border: 1px solid rgba(0, 123, 255, 0.2); }
 
-        .container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 30px; }
+        .container { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: flex-start; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
 
-        .setup-panel { background: var(--panel); padding: 30px; border-radius: 28px; border: 1px solid #eee; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
-
+        .setup-panel { background: var(--panel); padding: 30px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px; }
         
+        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #888; letter-spacing: 1px; }
 
-        .control-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        input[type="text"], textarea, select { background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 12px; outline: none; font-size: 14px; font-family: inherit; }
+        textarea { height: 150px; resize: none; line-height: 1.6; }
 
-        label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #999; letter-spacing: 1px; }
-
-        input[type="text"], textarea, select { background: white; border: 1px solid #ddd; padding: 14px; border-radius: 14px; outline: none; font-size: 14px; font-family: inherit; }
-
-        textarea { height: 120px; resize: none; line-height: 1.6; }
-
-        .btn-group { display: flex; gap: 15px; }
-
-        .btn-primary { flex: 1; background: var(--blue-bright); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
-
-        /* KANVAS FULL SUDUT */
-
-        #captureArea { 
-
-            width: 360px; min-height: 520px; background: #fff; 
-
-            display: flex; flex-direction: column; margin: 0 auto;
-
-            border: 1px solid #eee; 
-
-        }
-
-        /* HEADER & STATUS BAR */
-
-        .status-bar { height: 25px; padding: 5px 15px 0; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; }
-
-        .chat-header { height: 55px; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
-
+        .member-item { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 10px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; }
+        .member-item input[type="text"] { padding: 6px 10px; flex: 1; }
         
+        .btn-primary { background: var(--blue-bright); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: opacity 0.2s; }
+        .btn-secondary { background: transparent; border: 1px solid var(--blue-bright); color: var(--blue-bright); padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
 
-        .st-wa { background: #075e54; color: white; } .hd-wa { background: #075e54; color: white; }
+        /* PREVIEW AREA (FULL KOTAK TANPA HP) */
+        .preview-wrapper { position: sticky; top: 40px; display: flex; flex-direction: column; align-items: center; }
+        #captureArea { width: 360px; min-height: 560px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
-        .st-ig { background: #000; color: white; } .hd-ig { background: #000; color: white; }
+        /* STATUS BAR LAYAKNYA HP MODERN (2026) */
+        .status-bar { height: 30px; padding: 5px 18px 0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; letter-spacing: -0.2px; z-index: 10; }
+        .status-icons { display: flex; align-items: center; gap: 6px; }
+        .battery-container { width: 22px; height: 11px; border: 1px solid currentColor; border-radius: 3px; position: relative; display: flex; align-items: center; padding: 1px; }
+        .battery-bar { height: 100%; background: currentColor; border-radius: 1px; transition: width 0.2s, background-color 0.2s; }
+        .battery-container::after { content: ''; width: 1.5px; height: 4px; background: currentColor; position: absolute; right: -3px; top: 3px; border-radius: 0 1px 1px 0; }
 
-        .st-im { background: #f4f4f4; color: #000; } .hd-im { background: #f4f4f4; color: #000; border-bottom: 1px solid #ddd;}
+        /* CHAT HEADER */
+        .chat-header { height: 60px; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; z-index: 10; position: relative; }
+        .avatar { width: 38px; height: 38px; background: #ccc; border-radius: 50%; margin-right: 12px; object-fit: cover; display: block; }
+        .header-info { display: flex; flex-direction: column; }
+        .header-info b { font-size: 14px; display: block; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .header-info span { font-size: 11px; opacity: 0.75; }
+        .icon-svg { width: 20px; height: 20px; fill: currentColor; opacity: 0.8; }
 
+        /* THEMES MANAGEMENT */
         .hide-element { display: none !important; }
 
-        .avatar { width: 34px; height: 34px; background: #ccc; border-radius: 50%; margin-right: 10px; }
+        /* WHATSAPP THEME LIGHT/DARK */
+        .st-wa-light { background: #075e54; color: #fff; } .hd-wa-light { background: #075e54; color: #fff; } .cv-wa-light { background: #e5ddd5; }
+        .st-wa-dark { background: #1f2c34; color: #e9edef; } .hd-wa-dark { background: #1f2c34; color: #e9edef; border-bottom: 1px solid #2a3942; } .cv-wa-dark { background: #0b141a; }
 
-        .header-info b { font-size: 14px; display: block; }
+        /* INSTAGRAM THEME LIGHT/DARK */
+        .st-ig-light { background: #fff; color: #000; } .hd-ig-light { background: #fff; color: #000; border-bottom: 1px solid #efefef; } .cv-ig-light { background: #fff; }
+        .st-ig-dark { background: #000; color: #fff; } .hd-ig-dark { background: #000; color: #fff; border-bottom: 1px solid #262626; } .cv-ig-dark { background: #000; }
 
-        .header-info span { font-size: 10px; opacity: 0.7; }
+        /* IMESSAGE THEME LIGHT/DARK */
+        .st-im-light { background: #f4f4f4; color: #000; } .hd-im-light { background: #f4f4f4; color: #000; border-bottom: 1px solid #e5e5e5; } .cv-im-light { background: #fff; }
+        .st-im-dark { background: #161617; color: #fff; } .hd-im-dark { background: #161617; color: #fff; border-bottom: 1px solid #323236; } .cv-im-dark { background: #000; }
 
-        .icon-svg { width: 18px; height: 18px; fill: currentColor; opacity: 0.8; }
+        /* POLOS THEME LIGHT/DARK */
+        .cv-po-light { background: #ffffff; padding-top: 25px !important; }
+        .cv-po-dark { background: #111827; padding-top: 25px !important; }
 
-        #chatView { flex: 1; padding: 15px; display: flex; flex-direction: column; }
-
-        .theme-whatsapp { background: #e5ddd5; }
-
-        .theme-instagram { background: #000; }
-
-        .theme-imessage { background: #fff; }
-
-        .theme-polos { background: #ffffff; padding-top: 30px; }
-
-        /* BUBBLES */
-
-        .msg { max-width: 80%; margin-bottom: 12px; padding: 10px 14px; border-radius: 18px; font-size: 13.5px; line-height: 1.45; }
-
+        /* BUBBLE ENGINE CORE */
+        #chatView { flex: 1; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; }
+        .msg-wrapper { display: flex; flex-direction: column; margin-bottom: 12px; width: 100%; }
+        .msg-sender-name { font-size: 10.5px; font-weight: 600; margin: 0 0 3px 8px; opacity: 0.7; }
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 13.5px; line-height: 1.45; position: relative; word-break: break-word; }
         
+        .msg.A { align-self: flex-end; }
+        .msg.B { align-self: flex-start; }
 
-        .theme-whatsapp .msg.A { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
+        /* WHATSAPP BUBBLES */
+        .cv-wa-light .msg.A { background: #dcf8c6; color: #303030; border-bottom-right-radius: 2px; }
+        .cv-wa-light .msg.B { background: #ffffff; color: #303030; border-bottom-left-radius: 2px; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+        .cv-wa-dark .msg.A { background: #005c4b; color: #e9edef; border-bottom-right-radius: 2px; }
+        .cv-wa-dark .msg.B { background: #202c33; color: #e9edef; border-bottom-left-radius: 2px; }
 
-        .theme-whatsapp .msg.B { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; }
+        /* INSTAGRAM BUBBLES */
+        .cv-ig-light .msg.A { background: #3797f0; color: #fff; }
+        .cv-ig-light .msg.B { background: #efefef; color: #000; }
+        .cv-ig-dark .msg.A { background: #3797f0; color: #fff; }
+        .cv-ig-dark .msg.B { background: #262626; color: #fff; }
 
+        /* IMESSAGE BUBBLES */
+        .cv-im-light .msg.A { background: #007aff; color: #fff; }
+        .cv-im-light .msg.B { background: #e9e9eb; color: #000; }
+        .cv-im-dark .msg.A { background: #0a84ff; color: #fff; }
+        .cv-im-dark .msg.B { background: #26262a; color: #fff; }
+
+        /* POLOS BUBBLES */
+        .cv-po-light .msg.A { background: var(--blue-bright); color: #fff; border-radius: 10px; }
+        .cv-po-light .msg.B { background: #f3f4f6; color: #000; border-radius: 10px; }
+        .cv-po-dark .msg.A { background: var(--blue-bright); color: #fff; border-radius: 10px; }
+        .cv-po-dark .msg.B { background: #374151; color: #fff; border-radius: 10px; }
+
+        /* BUBBLE IMAGE STYLING */
+        .msg-img { max-width: 100%; border-radius: 12px; display: block; margin: 2px 0; }
+
+        /* SPECIAL LOG STATUS & CALL EXTRA LOGIC */
+        .status-meta { font-size: 10px; display: flex; justify-content: flex-end; align-items: center; gap: 3px; margin-top: 4px; opacity: 0.6; text-align: right; }
+        .msg.B .status-meta { justify-content: flex-start; }
+        .cv-ig-light .status-meta, .cv-ig-dark .status-meta, .cv-im-light .status-meta, .cv-im-dark .status-meta, .cv-po-light .status-meta, .cv-po-dark .status-meta { display: none !important; }
         
+        /* BOTTOM STATUS OVERLAY FOR IG/IMESSAGE */
+        .app-status-receipt { font-size: 11px; opacity: 0.6; margin: 2px 4px 10px 0; align-self: flex-end; }
+        .msg-wrapper:not(:last-child) .app-status-receipt { display: none; }
 
-        .theme-instagram .msg.A { align-self: flex-start; background: #262626; color: white; }
+        /* BALON KHUSUS DELETED & MISSED CALL */
+        .msg-system-action { display: flex; align-items: center; gap: 8px; font-style: italic; opacity: 0.75; font-size: 13px; }
 
-        .theme-instagram .msg.B { align-self: flex-end; background: linear-gradient(135deg, #3797f0 0%, #7e37f0 100%); color: white; }
+        /* SYSTEM NARRATOR STYLING */
+        .msg.N { align-self: center; background: rgba(0,0,0,0.12); color: #222; font-size: 11.5px; text-align: center; font-style: italic; padding: 8px 16px; width: 85%; border-radius: 10px; margin: 12px 0; font-weight: 500; line-height: 1.4; }
+        .cv-wa-dark .msg.N { background: #182229; color: #8696a0; }
+        .cv-ig-dark .msg.N { background: #1c1c1c; color: #a8a8a8; }
+        .cv-im-dark .msg.N { background: #1c1c1e; color: #8e8e93; }
+        .cv-po-light .msg.N { background: #f9fafb; border: 1px solid #e5e7eb; color: #4b5563; }
+        .cv-po-dark .msg.N { background: #1f2937; border: 1px solid #374151; color: #9ca3af; }
 
-        
-
-        .theme-imessage .msg.A { align-self: flex-start; background: #e9e9eb; color: #000; }
-
-        .theme-imessage .msg.B { align-self: flex-end; background: #007aff; color: white; }
-
-        .theme-polos .msg.A { align-self: flex-start; background: #f2f2f2; color: #000; border-radius: 10px; }
-
-        .theme-polos .msg.B { align-self: flex-end; background: var(--blue-bright); color: #fff; border-radius: 10px; }
-
-        /* PERBAIKAN: BALON NARATOR LEBIH TEGAS (SOLID) */
-
-        .msg.N { 
-
-            align-self: center; 
-
-            background: rgba(0,0,0,0.15); /* Opacity ditingkatkan agar lebih solid */
-
-            color: #333; /* Teks lebih gelap agar terbaca */
-
-            font-size: 11px; 
-
-            text-align: center; 
-
-            font-style: italic; 
-
-            padding: 10px 20px; 
-
-            width: 85%; 
-
-            border-radius: 12px; 
-
-            margin: 15px 0; 
-
-            font-weight: 500;
-
-        }
-
-        .theme-instagram .msg.N { 
-
-            background: rgba(255,255,255,0.2); 
-
-            color: #eee; 
-
-        }
-
-        .theme-polos .msg.N { 
-
-            background: #f9f9f9; 
-
-            border: 1px solid #eee;
-
-            color: #555;
-
-        }
-
+        /* TOGGLE SWITCH SWITCH GLOWING UI */
+        .switch-container { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--blue-bright); }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
-
 </head>
-
 <body>
 
     <div class="brand-container">
-
-        <h1 class="brand">LUNARISE CHAT GENERATOR</h1>
-
-        <div class="highlight-oval">Jadikan Ceritamu Lebih Hidup</div>
-
+        <h1 class="brand">Lunarise</h1>
+        <div class="highlight-oval">Premium Multi-Character Storytelling Engine</div>
     </div>
 
     <div class="container">
-
+        <!-- CONTROL PANEL -->
         <div class="setup-panel">
-
-            <div class="control-group">
-
-                <label>Nama Karakter</label>
-
-                <input type="text" id="nameInput" oninput="updateContent()" value="Ayang ❤️">
-
-            </div>
-
-            <div class="control-group">
-
-                <label>Naskah (A:, B:, N:)</label>
-
-                <textarea id="scriptInput" oninput="updateContent()">N: Malam itu di teras rumah...
-
-A: Bintangnya terang ya malam ini.
-
-B: Iya, tapi masih kalah terang sama senyummu. 😊
-
-N: Tiba-tiba angin berhembus kencang.</textarea>
-
-            </div>
-
-            <div class="control-group">
-
-                <label>Pilihan Tampilan</label>
-
-                <select id="themeSelect" onchange="updateTheme()">
-
-                    <option value="theme-whatsapp">WhatsApp Style</option>
-
-                    <option value="theme-imessage">iMessage Style</option>
-
-                    <option value="theme-instagram">Instagram DM</option>
-
-                    <option value="theme-polos">Tampilan Polos (Minimalis)</option>
-
-                </select>
-
-            </div>
-
-            <div class="btn-group">
-
-                <button class="btn-primary" onclick="downloadImage()">Simpan Gambar PNG</button>
-
-            </div>
-
-        </div>
-
-        <div id="captureArea">
-
-            <div id="statusBar" class="status-bar st-wa">
-
-                <span id="currentTime">12:00</span>
-
-                <div style="display:flex;gap:5px">📶 🔋</div>
-
-            </div>
-
-            <div id="chatHeader" class="chat-header hd-wa">
-
-                <div style="display:flex;align-items:center">
-
-                    <div class="avatar"></div>
-
-                    <div class="header-info">
-
-                        <b id="displayCharName">Ayang ❤️</b>
-
-                        <span>Online</span>
-
-                    </div>
-
-                </div>
-
-                <div style="display:flex;gap:12px">
-
-                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
-
-                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 8a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z"/></svg>
-
-                </div>
-
-            </div>
-
             
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Mode Tampilan</label>
+                    <div class="switch-container">
+                        <span style="font-size:13px; font-weight:600;">Dark Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle" onchange="applyGlobalTheme()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Pilihan Aplikasi</label>
+                    <select id="appSelect" onchange="applyGlobalTheme()">
+                        <option value="wa">WhatsApp Style</option>
+                        <option value="im">iMessage Style</option>
+                        <option value="ig">Instagram DM</option>
+                        <option value="po">Tampilan Polos (Minimalis)</option>
+                    </select>
+                </div>
+            </div>
 
-            <div id="chatView" class="theme-whatsapp"></div>
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Status Indikator Utama (Kiri)</label>
+                    <select id="statusTypeSelect" onchange="renderStatusField()">
+                        <option value="online">Online</option>
+                        <option value="typing">Typing...</option>
+                        <option value="lastseen">Last Seen...</option>
+                        <option value="kosong">Kosong (Sembunyikan)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Isi Teks Last Seen</label>
+                    <input type="text" id="statusTextInput" value="hari ini pukul 14:20" oninput="updateChatLive()">
+                </div>
+            </div>
 
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Status Bar Atas</label>
+                    <div class="switch-container">
+                        <span style="font-size:13px; font-weight:600;">Tampilkan Bar HP</span>
+                        <label class="switch">
+                            <input type="checkbox" id="statusBarToggle" checked onchange="applyGlobalTheme()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Daya Baterai HP (<span id="batVal">80</span>%)</label>
+                    <input type="range" id="batterySlider" min="1" max="100" value="80" style="margin-top:10px;" oninput="updateBatteryLevel()">
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Centang / Status Pengiriman (Kanan)</label>
+                    <select id="receiptSelect" onchange="updateChatLive()">
+                        <option value="read">Centang 2 Biru / Read / Seen</option>
+                        <option value="delivered">Centang 2 Abu / Delivered</option>
+                        <option value="sent">Centang 1 Abu</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Kirim Gambar Ke Story Naskah</label>
+                    <button class="btn-secondary" onclick="document.getElementById('chatImageInput').click()">+ Upload File Gambar</button>
+                    <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="injectImageToScript()">
+                </div>
+            </div>
+
+            <!-- REGISTRASI ANGGOTA GRUP -->
+            <div class="control-group" style="border-top: 1px solid var(--border); padding-top: 15px;">
+                <label>Daftar Karakter Grup (A = Kanan/Pengirim, Lainnya = Kiri)</label>
+                <div id="membersContainer">
+                    <!-- Default Members Loaded via JS -->
+                </div>
+                <button class="btn-secondary" style="margin-top:5px; padding:6px;" onclick="addNewMember()">+ Tambah Anggota Karakter Baru</button>
+            </div>
+
+            <div class="control-group">
+                <label>Naskah Utama Editor (Gunakan Kode Inisial Huruf)</label>
+                <textarea id="scriptInput" oninput="updateChatLive()">N: Malam hari di dalam grup internal project...
+A: Rek, progress desain UI kita gimana? Aman semua?
+B: Aman A, ini lagi lanjut ngerjain modul visual asset.
+C: Punyaku bentar lagi beres ya.
+B: [delete]
+A: [image_1]
+C: Wih keren banget hasil render gambarnya! 🔥
+B: [missed_call]</textarea>
+            </div>
+
+            <button class="btn-primary" onclick="downloadHighResPNG()">Simpan Gambar PNG (High Res)</button>
         </div>
 
+        <!-- LIVE PREVIEW CANVAS AREA -->
+        <div class="preview-wrapper">
+            <div id="captureArea">
+                <!-- INDIKATOR HP MODERN -->
+                <div id="statusBar" class="status-bar">
+                    <span id="currentTime">16:32</span>
+                    <div class="status-icons">
+                        <span>📶</span>
+                        <span>5G</span>
+                        <div class="battery-container">
+                            <div id="batteryBar" class="battery-bar" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC TOP APP HEADER -->
+                <div id="chatHeader" class="chat-header">
+                    <div style="display:flex; align-items:center;">
+                        <img id="mainAvatar" class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23cccccc'/></svg>">
+                        <div class="header-info">
+                            <b id="headerTargetName">Grup Project Premium</b>
+                            <span id="headerTargetStatus">Online</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:14px;">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 8a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                    </div>
+                </div>
+                
+                <!-- CONTAINER UTAMA BALON CHAT -->
+                <div id="chatView"></div>
+            </div>
+        </div>
     </div>
 
 <script>
+    // Storage internal database untuk menampung data gambar dan metadata karakter
+    let loadedChatImages = {};
+    let membersDB = {
+        'A': { name: 'You (A)', avatar: '' },
+        'B': { name: 'Budi (B)', avatar: '' },
+        'C': { name: 'Cici (C)', avatar: '' }
+    };
 
-    function updateClock() {
+    // Inisialisasi awal program
+    window.onload = function() {
+        renderMemberPanelUI();
+        applyGlobalTheme();
+        updateLiveClock();
+        setInterval(updateLiveClock, 1000);
+    };
 
+    function updateLiveClock() {
         const now = new Date();
-
-        document.getElementById('currentTime').innerText = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-
+        document.getElementById('currentTime').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
     }
 
-    setInterval(updateClock, 1000); updateClock();
+    function renderMemberPanelUI() {
+        const container = document.getElementById('membersContainer');
+        container.innerHTML = '';
+        Object.keys(membersDB).forEach(key => {
+            const div = document.createElement('div');
+            div.className = 'member-item';
+            div.innerHTML = `
+                <b style="width:20px; color:var(--blue-bright)">${key}:</b>
+                <input type="text" value="${membersDB[key].name}" oninput="updateMemberName('${key}', this.value)" placeholder="Nama Karakter">
+                <input type="file" accept="image/*" style="display:none" id="file-${key}" onchange="updateMemberAvatar('${key}', this)">
+                <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('file-${key}').click()">Avatar</button>
+            `;
+            container.appendChild(div);
+        });
+    }
 
-    function updateTheme() {
+    function addNewMember() {
+        const currentCount = Object.keys(membersDB).length;
+        const nextKey = String.fromCharCode(65 + currentCount); // Membuat inisial otomatis D, E, F dst.
+        if(currentCount >= 26) return alert("Batas maksimal inisial alfabet tercapai.");
+        membersDB[nextKey] = { name: `User (${nextKey})`, avatar: '' };
+        renderMemberPanelUI();
+        updateChatLive();
+    }
 
-        const t = document.getElementById('themeSelect').value;
+    function updateMemberName(key, val) {
+        membersDB[key].name = val;
+        updateChatLive();
+    }
 
-        const cv = document.getElementById('chatView');
+    function updateMemberAvatar(key, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                membersDB[key].avatar = e.target.result;
+                updateChatLive();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
-        const ch = document.getElementById('chatHeader');
+    function renderStatusField() {
+        const type = document.getElementById('statusTypeSelect').value;
+        const inputField = document.getElementById('statusTextInput');
+        inputField.disabled = (type !== 'lastseen');
+        updateChatLive();
+    }
+
+    function updateBatteryLevel() {
+        const v = document.getElementById('batterySlider').value;
+        document.getElementById('batVal').innerText = v;
+        document.getElementById('batteryBar').style.width = v + '%';
+    }
+
+    function applyGlobalTheme() {
+        const isDarkMode = document.getElementById('darkModeToggle').checked;
+        const app = document.getElementById('appSelect').value;
+        const showBar = document.getElementById('statusBarToggle').checked;
+        
+        // Atur tema global pembungkus web utama
+        document.documentElement.setAttribute('data-global-theme', isDarkMode ? 'dark' : 'light');
 
         const sb = document.getElementById('statusBar');
-
-        cv.className = t;
-
-        ch.classList.remove('hide-element');
-
-        sb.classList.remove('hide-element');
-
-        if(t === 'theme-whatsapp') {
-
-            ch.className = 'chat-header hd-wa'; sb.className = 'status-bar st-wa';
-
-        } else if(t === 'theme-instagram') {
-
-            ch.className = 'chat-header hd-ig'; sb.className = 'status-bar st-ig';
-
-        } else if(t === 'theme-imessage') {
-
-            ch.className = 'chat-header hd-im'; sb.className = 'status-bar st-im';
-
-        } else if(t === 'theme-polos') {
-
-            ch.classList.add('hide-element');
-
-            sb.classList.add('hide-element');
-
-        }
-
-        updateContent();
-
-    }
-
-    function updateContent() {
-
-        const name = document.getElementById('nameInput').value;
-
-        const script = document.getElementById('scriptInput').value;
-
+        const ch = document.getElementById('chatHeader');
         const cv = document.getElementById('chatView');
 
-        document.getElementById('displayCharName').innerText = name || 'User';
+        // Reset visibility status bar
+        sb.className = showBar ? 'status-bar' : 'status-bar hide-element';
+        ch.className = 'chat-header';
 
-        cv.innerHTML = '';
+        const subTheme = isDarkMode ? 'dark' : 'light';
+        
+        if (app === 'wa') {
+            sb.classList.add('st-wa-' + subTheme);
+            ch.classList.add('hd-wa-' + subTheme);
+            cv.className = 'cv-wa-' + subTheme;
+        } else if (app === 'ig') {
+            sb.classList.add('st-ig-' + subTheme);
+            ch.classList.add('hd-ig-' + subTheme);
+            cv.className = 'cv-ig-' + subTheme;
+        } else if (app === 'im') {
+            sb.classList.add('st-im-' + subTheme);
+            ch.classList.add('hd-im-' + subTheme);
+            cv.className = 'cv-im-' + subTheme;
+        } else if (app === 'po') {
+            sb.className = 'status-bar hide-element';
+            ch.className = 'chat-header hide-element';
+            cv.className = 'cv-po-' + subTheme;
+        }
 
-        script.split('\n').forEach(line => {
+        updateChatLive();
+    }
 
+    function injectImageToScript() {
+        const fileInput = document.getElementById('chatImageInput');
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgId = `[image_${Object.keys(loadedChatImages).length + 1}]`;
+                loadedChatImages[imgId] = e.target.result;
+                
+                const scriptBox = document.getElementById('scriptInput');
+                scriptBox.value += `\nA: ${imgId}`;
+                updateChatLive();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    }
+
+    function updateChatLive() {
+        const app = document.getElementById('appSelect').value;
+        const isDark = document.getElementById('darkModeToggle').checked;
+        const statusType = document.getElementById('statusTypeSelect').value;
+        const statusText = document.getElementById('statusTextInput').value;
+        const receipt = document.getElementById('receiptSelect').value;
+        const scriptText = document.getElementById('scriptInput').value;
+        const cv = document.getElementById('chatView');
+
+        // Render data header dinamis
+        const totalMembers = Object.keys(membersDB).length;
+        if(totalMembers > 1) {
+            document.getElementById('headerTargetName').innerText = "Grup Cerita Premium (" + totalMembers + ")";
+            // Foto default grup jika anggota banyak
+            document.getElementById('mainAvatar').src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23007bff'/><text x='50%25' y='55%25' font-family='sans-serif' font-size='30' fill='white' text-anchor='middle' font-weight='bold'>GR</text></svg>";
+        }
+        
+        // Kondisi jika isi chat hanya diatur untuk interaksi 2 orang personal (A dan B)
+        if(totalMembers === 2 || (totalMembers > 2 && !scriptText.includes('C:'))) {
+            document.getElementById('headerTargetName').innerText = membersDB['B'] ? membersDB['B'].name : "User B";
+            if(membersDB['B'] && membersDB['B'].avatar) {
+                document.getElementById('mainAvatar').src = membersDB['B'].avatar;
+            } else {
+                document.getElementById('mainAvatar').src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ccc'/></svg>";
+            }
+        }
+
+        // Penanganan teks deskripsi status header online/typing
+        let finalStatusStr = '';
+        if(statusType === 'online') finalStatusStr = 'Online';
+        else if(statusType === 'typing') finalStatusStr = 'Typing...';
+        else if(statusType === 'lastseen') finalStatusStr = 'terakhir dilihat ' + statusText;
+        document.getElementById('headerTargetStatus').innerText = finalStatusStr;
+
+        cv.innerHTML = ''; // Reset kanvas chat
+
+        // Kumpulan icon SVG tanda terima
+        let checkIconHtml = '';
+        if(receipt === 'sent') {
+            checkIconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`;
+        } else if(receipt === 'delivered') {
+            checkIconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 6L8.5 14.5L5 11M22 6l-8.5 8.5"/></svg>`;
+        } else if(receipt === 'read') {
+            let colorCode = (app === 'wa') ? '#53bdeb' : (isDark ? '#3797f0' : '#3797f0');
+            checkIconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${colorCode}" stroke-width="2.5"><path d="M17 6L8.5 14.5L5 11M22 6l-8.5 8.5"/></svg>`;
+        }
+
+        let receiptText = 'Read';
+        if(receipt === 'delivered') receiptText = 'Delivered';
+        if(receipt === 'sent') receiptText = 'Sent';
+
+        const lines = scriptText.split('\n');
+
+        lines.forEach(line => {
             if(!line.trim()) return;
-
             const prefix = line.substring(0,2).toUpperCase();
-
             const content = line.substring(2).trim();
 
-            const b = document.createElement('div');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'msg-wrapper';
 
-            
+            // Logika Deteksi Narator Utama (N:)
+            if(prefix === 'N:') {
+                const b = document.createElement('div');
+                b.className = 'msg N';
+                b.innerText = content;
+                cv.appendChild(b);
+                return;
+            }
 
-            if(prefix === 'A:') b.className = 'msg A';
+            // Validasi deteksi inisial karakter dalam database anggota
+            const actorKey = line.split(':')[0].trim().toUpperCase();
+            const messageBody = line.substring(line.indexOf(':') + 1).trim();
 
-            else if(prefix === 'B:') b.className = 'msg B';
+            if(!membersDB[actorKey]) {
+                // Jika input tidak terformat inisial resmi, masukkan ke mode narator otomatis
+                const b = document.createElement('div');
+                b.className = 'msg N';
+                b.innerText = line;
+                cv.appendChild(b);
+                return;
+            }
 
-            else if(prefix === 'N:') b.className = 'msg N';
+            const bubble = document.createElement('div');
+            bubble.className = `msg ${actorKey === 'A' ? 'A' : 'B'}`;
 
-            else { b.className = 'msg N'; b.innerText = line; return cv.appendChild(b); }
+            // Tambahkan label nama kecil di atas balon jika format chat berupa grup
+            if(actorKey !== 'A' && totalMembers > 2) {
+                const nameLabel = document.createElement('span');
+                nameLabel.className = 'msg-sender-name';
+                nameLabel.innerText = membersDB[actorKey].name;
+                wrapper.appendChild(nameLabel);
+            }
 
-            
+            // DETEKSI LOG FITUR: PESAN DIHAPUS [delete]
+            if(messageBody.toLowerCase() === '[delete]') {
+                bubble.innerHTML = `
+                    <div class="msg-system-action">
+                        <span>🚫</span> 
+                        <span>${actorKey === 'A' ? 'Anda telah menghapus pesan ini' : 'Pesan ini telah dihapus'}</span>
+                    </div>`;
+            } 
+            // DETEKSI LOG FITUR: PANGGILAN TAK TERJAWAB [missed_call]
+            else if(messageBody.toLowerCase() === '[missed_call]') {
+                bubble.innerHTML = `
+                    <div class="msg-system-action" style="color:#ef4444;">
+                        <span>📞</span> 
+                        <span>Panggilan tidak terjawab</span>
+                    </div>`;
+            }
+            // DETEKSI LOG FITUR: RENDER MEDIA GAMBAR [image_X]
+            else if(messageBody.startsWith('[image_') && messageBody.endsWith(']')) {
+                const srcImg = loadedChatImages[messageBody];
+                if(srcImg) {
+                    bubble.innerHTML = `<img class="msg-img" src="${srcImg}">`;
+                } else {
+                    bubble.innerHTML = `<div style="font-style:italic;opacity:0.5;">[Gambar rusak/tidak ditemukan]</div>`;
+                }
+            } 
+            // DEFAULT: KONTEN TEKS BIASA
+            else {
+                bubble.innerText = messageBody;
+            }
 
-            b.innerText = content;
+            // Penambahan jam kecil internal di dalam gelembung khusus aplikasi WhatsApp
+            if(app === 'wa') {
+                const meta = document.createElement('div');
+                meta.className = 'status-meta';
+                meta.innerHTML = `<span>12:05</span>`;
+                if(actorKey === 'A') meta.innerHTML += `<span>${checkIconHtml}</span>`;
+                bubble.appendChild(meta);
+            }
 
-            cv.appendChild(b);
+            wrapper.appendChild(bubble);
 
+            // Penambahan teks status pengiriman di luar gelembung chat khusus iMessage / Instagram
+            if(actorKey === 'A' && (app === 'ig' || app === 'im')) {
+                const receiptContainer = document.createElement('span');
+                receiptContainer.className = 'app-status-receipt';
+                receiptContainer.innerText = receiptText;
+                wrapper.appendChild(receiptContainer);
+            }
+
+            cv.appendChild(wrapper);
         });
 
+        // Paksa scroll preview otomatis berada di paling bawah naskah chat terbaru
+        cv.scrollTop = cv.scrollHeight;
     }
 
-    function downloadImage() {
-
+    function downloadHighResPNG() {
         const area = document.querySelector("#captureArea");
-
-        html2canvas(area, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-
+        
+        // Penyesuaian konfigurasi html2canvas untuk menjamin hasil render teks tajam di media sosial
+        html2canvas(area, { 
+            scale: 3, 
+            backgroundColor: null,
+            useCORS: true,
+            logging: false
+        }).then(canvas => {
             const link = document.createElement('a');
-
-            link.download = 'lunarise-export.png';
-
-            link.href = canvas.toDataURL();
-
+            link.download = 'lunarise-premium-chat-' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
             link.click();
-
         });
-
     }
-
-    updateTheme();
-
 </script>
-
 </body>
-
 </html>
-    
-  </body>
-  
-</html>
- 
