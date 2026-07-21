@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUNARISE ULTIMATE CHAT ENGINE</title>
+    <title>LUNARISE ULTIMATE CHAT & THREADS ENGINE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -34,6 +34,699 @@
             flex-direction: column; 
             align-items: center;
             transition: background 0.3s, color 0.3s;
+        }
+        
+        .brand-container { text-align: center; margin-bottom: 40px; }
+        h1.brand { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 2.8rem; letter-spacing: -1.5px; margin: 0; color: var(--blue-bright); text-transform: uppercase; }
+        .highlight-oval { display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0, 123, 255, 0.1); color: var(--blue-bright); font-weight: 600; font-size: 1rem; margin-top: 10px; border: 1px solid rgba(0, 123, 255, 0.2); }
+
+        .container { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: flex-start; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+
+        .setup-panel { background: var(--panel); padding: 30px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px; }
+        
+        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+
+        input[type="text"], textarea, select { background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 12px; outline: none; font-size: 14px; font-family: inherit; }
+        textarea { height: 240px; resize: vertical; line-height: 1.6; }
+
+        .member-item { display: flex; flex-direction: column; gap: 8px; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; }
+        .member-row-top { display: flex; align-items: center; gap: 10px; }
+        .member-row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .member-item input[type="text"] { padding: 8px 10px; font-size: 12px; }
+        
+        .btn-primary { background: var(--blue-bright); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: opacity 0.2s; }
+        .btn-secondary { background: transparent; border: 1px solid var(--blue-bright); color: var(--blue-bright); padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
+
+        /* PREVIEW AREA */
+        .preview-wrapper { position: sticky; top: 40px; display: flex; flex-direction: column; align-items: center; }
+        #captureArea { width: 360px; min-height: 580px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+        /* HP MODERN STATUS BAR */
+        .status-bar { height: 30px; padding: 5px 18px 0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; letter-spacing: -0.2px; z-index: 10; }
+        .status-icons { display: flex; align-items: center; gap: 6px; }
+        .battery-container { width: 22px; height: 11px; border: 1px solid currentColor; border-radius: 3px; position: relative; display: flex; align-items: center; padding: 1px; }
+        .battery-bar { height: 100%; background: currentColor; border-radius: 1px; }
+        .battery-container::after { content: ''; width: 1.5px; height: 4px; background: currentColor; position: absolute; right: -3px; top: 3px; border-radius: 0 1px 1px 0; }
+
+        /* CHAT HEADER */
+        .chat-header { height: 60px; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; z-index: 10; position: relative; }
+        .avatar { width: 38px; height: 38px; background: #ccc; border-radius: 50%; margin-right: 12px; object-fit: cover; display: block; }
+        .header-info { display: flex; flex-direction: column; }
+        .header-info b { font-size: 14px; display: block; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .header-info span { font-size: 11px; opacity: 0.75; }
+        .icon-svg { width: 20px; height: 20px; fill: currentColor; opacity: 0.8; }
+
+        .hide-element { display: none !important; }
+
+        /* THEMES STYLING MAPPING */
+        .st-wa-light { background: #075e54; color: #fff; } .hd-wa-light { background: #075e54; color: #fff; } .cv-wa-light { background: #e5ddd5; }
+        .st-wa-dark { background: #1f2c34; color: #e9edef; } .hd-wa-dark { background: #1f2c34; color: #e9edef; border-bottom: 1px solid #2a3942; } .cv-wa-dark { background: #0b141a; }
+        .st-ig-light { background: #fff; color: #000; } .hd-ig-light { background: #fff; color: #000; border-bottom: 1px solid #efefef; } .cv-ig-light { background: #fff; }
+        .st-ig-dark { background: #000; color: #fff; } .hd-ig-dark { background: #000; color: #fff; border-bottom: 1px solid #262626; } .cv-ig-dark { background: #000; }
+        .st-im-light { background: #f4f4f4; color: #000; } .hd-im-light { background: #f4f4f4; color: #000; border-bottom: 1px solid #e5e5e5; } .cv-im-light { background: #fff; }
+        .st-im-dark { background: #161617; color: #fff; } .hd-im-dark { background: #161617; color: #fff; border-bottom: 1px solid #323236; } .cv-im-dark { background: #000; }
+        .cv-po-light { background: #ffffff; padding-top: 25px !important; } .cv-po-dark { background: #111827; padding-top: 25px !important; }
+
+        /* CORE BUBBLES GENERATOR */
+        #chatView { flex: 1; padding: 12px; display: flex; flex-direction: column; overflow-y: auto; }
+        .msg-wrapper { display: flex; flex-direction: column; margin-bottom: 12px; width: 100%; }
+        .msg-sender-name { font-size: 10.5px; font-weight: 600; margin: 0 0 3px 8px; opacity: 0.7; }
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 13.5px; line-height: 1.45; position: relative; word-break: break-word; }
+        
+        .msg.A { align-self: flex-end; }
+        .msg.B { align-self: flex-start; }
+
+        /* APP-SPECIFIC BUBBLES */
+        .cv-wa-light .msg.A { background: #dcf8c6; color: #303030; border-bottom-right-radius: 2px; }
+        .cv-wa-light .msg.B { background: #ffffff; color: #303030; border-bottom-left-radius: 2px; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+        .cv-wa-dark .msg.A { background: #005c4b; color: #e9edef; border-bottom-right-radius: 2px; }
+        .cv-wa-dark .msg.B { background: #202c33; color: #e9edef; border-bottom-left-radius: 2px; }
+        .cv-ig-light .msg.A { background: #3797f0; color: #fff; } .cv-ig-light .msg.B { background: #efefef; color: #000; }
+        .cv-ig-dark .msg.A { background: #3797f0; color: #fff; } .cv-ig-dark .msg.B { background: #262626; color: #fff; }
+        .cv-im-light .msg.A { background: #007aff; color: #fff; } .cv-im-light .msg.B { background: #e9e9eb; color: #000; }
+        .cv-im-dark .msg.A { background: #0a84ff; color: #fff; } .cv-im-dark .msg.B { background: #26262a; color: #fff; }
+        .cv-po-light .msg.A { background: var(--blue-bright); color: #fff; border-radius: 10px; } .cv-po-light .msg.B { background: #f3f4f6; color: #000; border-radius: 10px; }
+        .cv-po-dark .msg.A { background: var(--blue-bright); color: #fff; border-radius: 10px; } .cv-po-dark .msg.B { background: #374151; color: #fff; border-radius: 10px; }
+
+        /* ADVANCED COMPONENTS STYLING */
+        .msg-img { max-width: 100%; border-radius: 12px; display: block; margin: 2px 0; transition: filter 0.2s; }
+        .blur-effect { filter: blur(10px) brightness(0.8); }
+        .status-meta { font-size: 10px; display: flex; justify-content: flex-end; align-items: center; gap: 3px; margin-top: 4px; opacity: 0.6; }
+        .msg.B .status-meta { justify-content: flex-start; }
+        .cv-ig-light .status-meta, .cv-ig-dark .status-meta, .cv-im-light .status-meta, .cv-im-dark .status-meta, .cv-po-light .status-meta, .cv-po-dark .status-meta { display: none !important; }
+        .app-status-receipt { font-size: 11px; opacity: 0.6; margin: 2px 4px 10px 0; align-self: flex-end; }
+        .msg-wrapper:not(:last-child) .app-status-receipt { display: none; }
+        .msg-system-action { display: flex; align-items: center; gap: 8px; font-style: italic; opacity: 0.75; font-size: 13px; }
+
+        /* VOICE NOTE */
+        .vn-layout { display: flex; align-items: center; gap: 10px; width: 180px; padding: 4px 0; }
+        .vn-play-btn { font-size: 18px; cursor: pointer; }
+        .vn-wave { flex: 1; height: 16px; background: repeating-linear-gradient(90deg, currentColor, currentColor 2px, transparent 2px, transparent 4px); opacity: 0.6; }
+
+        /* MAPS */
+        .map-layout { width: 200px; background: #e0e0e0; border-radius: 8px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .map-visual { height: 80px; background: linear-gradient(45deg, #a3daf2 25%, #bcdca2 25%, #bcdca2 50%, #a3daf2 50%, #a3daf2 75%, #bcdca2 75%); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .map-desc { padding: 8px; background: #fff; color: #333; font-size: 11px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+        [data-global-theme="dark"] .map-desc { background: #2a2a2a; color: #fff; }
+
+        /* NARRATOR & SYSTEM MESSAGES */
+        .msg.N { align-self: center; background: rgba(0,0,0,0.12); color: #222; font-size: 11.5px; text-align: center; font-style: italic; padding: 8px 16px; width: 85%; border-radius: 10px; margin: 12px 0; font-weight: 500; }
+        .msg.N.sys-box { background: rgba(0,0,0,0.05) !important; border: 1px solid rgba(0,0,0,0.05); border-radius: 6px; font-style: normal; font-size: 11px; opacity: 0.8; color: #444; width: auto; max-width: 90%; }
+        
+        .cv-wa-dark .msg.N { background: #182229; color: #8696a0; } .cv-wa-dark .msg.N.sys-box { background: #182229 !important; color: #8696a0; border: none; }
+        .cv-ig-dark .msg.N { background: #1c1c1c; color: #a8a8a8; }
+        .cv-im-dark .msg.N { background: #1c1c1e; color: #8e8e93; }
+        .cv-po-light .msg.N { background: #f9fafb; border: 1px solid #e5e7eb; color: #4b5563; }
+        .cv-po-dark .msg.N { background: #1f2937; border: 1px solid #374151; color: #9ca3af; }
+
+        /* STYLES KHUSUS THREADS (DIPERLUAS & DILONGGARKAN) */
+        .threads-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            gap: 12px;
+            color: #000;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        [data-global-theme="dark"] .threads-card {
+            background: #101010;
+            border-color: #262626;
+            color: #f5f5f5;
+        }
+
+        .threads-avatar-col { display: flex; flex-direction: column; align-items: center; }
+        .threads-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #ccc; }
+        .threads-content-col { flex: 1; display: flex; flex-direction: column; }
+        .threads-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .threads-user-info { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .threads-display-name { font-size: 13.5px; font-weight: 700; color: currentColor; }
+        .threads-verified-badge { width: 13px; height: 13px; fill: #0095f6; display: inline-block; }
+        .threads-username { font-size: 11.5px; opacity: 0.55; margin-left: 2px; }
+        .threads-time { font-size: 11px; opacity: 0.45; }
+        
+        /* Teks isi threads mendukung multi-paragraf/enter */
+        .threads-body { font-size: 13.5px; line-height: 1.55; margin: 6px 0 12px 0; word-break: break-word; white-space: pre-wrap; }
+        
+        .threads-media { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; margin: 4px 0 12px 0; border: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Jarak action item like/reply/repost dibuat lega */
+        .threads-actions { display: flex; align-items: center; gap: 18px; margin-top: 6px; margin-bottom: 2px; opacity: 0.85; }
+        .threads-action-item { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; }
+        .threads-icon { width: 16px; height: 16px; fill: currentColor; }
+
+        /* SWITCH COMPONENT */
+        .switch-container { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--blue-bright); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+    <div class="brand-container">
+        <h1 class="brand">Lunarise</h1>
+        <div class="highlight-oval">Ultimate Engine + Threads Edition</div>
+    </div>
+
+    <div class="container">
+        <div class="setup-panel">
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Nama Utama Ruang Chat</label>
+                    <input type="text" id="chatRoomNameInput" value="Grup VIP Premium 🤫" oninput="updateChatLive()">
+                </div>
+                <div class="control-group">
+                    <label>Pilihan Aplikasi</label>
+                    <select id="appSelect" onchange="applyGlobalTheme()">
+                        <option value="wa">WhatsApp Style</option>
+                        <option value="im">iMessage Style</option>
+                        <option value="ig">Instagram DM</option>
+                        <option value="po">Tampilan Polos (Minimalis)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Mode Gelap/Terang</label>
+                    <div class="switch-container">
+                        <span style="font-size:13px; font-weight:600;">Dark Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle" onchange="applyGlobalTheme()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Status Konten Sub-Header</label>
+                    <select id="statusTypeSelect" onchange="renderStatusField()">
+                        <option value="online">Online</option>
+                        <option value="typing">Typing...</option>
+                        <option value="lastseen">Last Seen...</option>
+                        <option value="kosong">Kosong (Sembunyikan)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Isi Teks Kustom Last Seen</label>
+                    <input type="text" id="statusTextInput" value="hari ini pukul 19.30" disabled oninput="updateChatLive()">
+                </div>
+                <div class="control-group">
+                    <label>Daya Baterai HP (<span id="batVal">95</span>%)</label>
+                    <input type="range" id="batterySlider" min="1" max="100" value="95" oninput="updateBatteryLevel()">
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div class="control-group">
+                    <label>Status Bar Atas</label>
+                    <div class="switch-container">
+                        <span style="font-size:13px; font-weight:600;">Tampilkan Bar HP</span>
+                        <label class="switch">
+                            <input type="checkbox" id="statusBarToggle" checked onchange="applyGlobalTheme()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Centang / Status Pengiriman</label>
+                    <select id="receiptSelect" onchange="updateChatLive()">
+                        <option value="read">Centang 2 Biru / Seen / Read</option>
+                        <option value="delivered">Centang 2 Abu / Delivered</option>
+                        <option value="sent">Centang 1 Abu</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Sisipkan Gambar ke Naskah Chat</label>
+                <button class="btn-secondary" onclick="document.getElementById('chatImageInput').click()">+ Upload File Gambar</button>
+                <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="injectImageToScript()">
+            </div>
+
+            <div class="control-group" style="border-top: 1px solid var(--border); padding-top: 15px;">
+                <label>Registrasi Karakter Chat & Threads</label>
+                <div id="membersContainer"></div>
+                <button class="btn-secondary" style="margin-top:5px; padding:6px;" onclick="addNewMember()">+ Tambah Anggota Karakter Baru</button>
+            </div>
+
+            <div class="control-group">
+                <label>Naskah Utama Editor (Ketik Perintah di Sini)</label>
+                <textarea id="scriptInput" oninput="updateChatLive()">N: [system: Pesan ini dilindungi enkripsi end-to-end]
+N: Pagi harinya Budi melihat postingan Threads Renita...
+T_A: Lagi mikirin konsep cerita novel baru, enaknya genre apa ya? 🤔
+Baris kedua ini sekarang aman ditekan Enter!
+Gak bakal bikin tombol like/reply-nya rusak. [time: 2h] [like: 1.2k] [reply: 45] [repost: 12]
+B: Kamu posting gituan di Threads ya?
+A: Iya, kenapa emangnya?
+T_B: Gimana kalau bikin genre Thriller Romantis aja? [time: 15m] [like: 89] [reply: 5] [repost: 2]
+A: [image_1]
+B: Nah mantap tuh gambarnya!</textarea>
+            </div>
+
+            <button class="btn-primary" onclick="downloadHighResPNG()">Simpan Gambar PNG (High Res)</button>
+        </div>
+
+        <div class="preview-wrapper">
+            <div id="captureArea">
+                <div id="statusBar" class="status-bar">
+                    <span id="currentTime">00:00</span>
+                    <div class="status-icons">
+                        <span>📶</span> <span>5G</span>
+                        <div class="battery-container"><div id="batteryBar" class="battery-bar" style="width: 95%;"></div></div>
+                    </div>
+                </div>
+
+                <div id="chatHeader" class="chat-header">
+                    <div style="display:flex; align-items:center;">
+                        <img id="mainAvatar" class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><circle cx='50' cy='50' r='50' fill='%23ccc'/></svg>">
+                        <div class="header-info">
+                            <b id="headerTargetName">Loading...</b>
+                            <span id="headerTargetStatus">Online</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:14px;">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 8a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                    </div>
+                </div>
+                
+                <div id="chatView"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let loadedChatImages = {};
+    let membersDB = {
+        'A': { name: 'Renita', threadsName: 'Renita Arjanti', username: '@renita_arjanti', verified: true, avatar: '' },
+        'B': { name: 'Budi', threadsName: 'Budi Santoso', username: '@budisantoso', verified: false, avatar: '' },
+        'C': { name: 'Cici', threadsName: 'Cici Paramida', username: '@ciciparamida', verified: false, avatar: '' }
+    };
+
+    window.onload = function() {
+        renderMemberPanelUI();
+        applyGlobalTheme();
+        updateLiveClock();
+        setInterval(updateLiveClock, 1000);
+    };
+
+    function updateLiveClock() {
+        const now = new Date();
+        document.getElementById('currentTime').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+    }
+
+    function renderMemberPanelUI() {
+        const container = document.getElementById('membersContainer');
+        container.innerHTML = '';
+        Object.keys(membersDB).forEach(key => {
+            const div = document.createElement('div');
+            div.className = 'member-item';
+            div.innerHTML = `
+                <div class="member-row-top">
+                    <b style="width:20px; color:var(--blue-bright)">${key}:</b>
+                    <input type="text" placeholder="Nama Chat" value="${membersDB[key].name}" oninput="updateMemberData('${key}', 'name', this.value)">
+                    <input type="file" accept="image/*" style="display:none" id="file-${key}" onchange="updateMemberAvatar('${key}', this)">
+                    <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('file-${key}').click()">Avatar</button>
+                </div>
+                <div class="member-row-bottom">
+                    <input type="text" placeholder="Display Name Threads" value="${membersDB[key].threadsName || ''}" oninput="updateMemberData('${key}', 'threadsName', this.value)">
+                    <input type="text" placeholder="Username Threads (@...)" value="${membersDB[key].username || ''}" oninput="updateMemberData('${key}', 'username', this.value)">
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; margin-top:2px;">
+                    <input type="checkbox" id="verif-${key}" ${membersDB[key].verified ? 'checked' : ''} onchange="updateMemberData('${key}', 'verified', this.checked)">
+                    <label for="verif-${key}" style="text-transform:none; font-weight:normal; color:currentColor;">Verified Badge (Centang Biru Threads)</label>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function addNewMember() {
+        const currentCount = Object.keys(membersDB).length;
+        const nextKey = String.fromCharCode(65 + currentCount);
+        if(currentCount >= 26) return alert("Batas maksimal inisial alfabet tercapai.");
+        membersDB[nextKey] = { 
+            name: `Karakter ${nextKey}`, 
+            threadsName: `Karakter ${nextKey}`, 
+            username: `@karakter_${nextKey.toLowerCase()}`, 
+            verified: false, 
+            avatar: '' 
+        };
+        renderMemberPanelUI();
+        updateChatLive();
+    }
+
+    function updateMemberData(key, field, val) {
+        membersDB[key][field] = val;
+        updateChatLive();
+    }
+
+    function updateMemberAvatar(key, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                membersDB[key].avatar = e.target.result;
+                updateChatLive();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function renderStatusField() {
+        const type = document.getElementById('statusTypeSelect').value;
+        document.getElementById('statusTextInput').disabled = (type !== 'lastseen');
+        updateChatLive();
+    }
+
+    function updateBatteryLevel() {
+        const v = document.getElementById('batterySlider').value;
+        document.getElementById('batVal').innerText = v;
+        document.getElementById('batteryBar').style.width = v + '%';
+    }
+
+    function applyGlobalTheme() {
+        const isDarkMode = document.getElementById('darkModeToggle').checked;
+        const app = document.getElementById('appSelect').value;
+        const showBar = document.getElementById('statusBarToggle').checked;
+        
+        document.documentElement.setAttribute('data-global-theme', isDarkMode ? 'dark' : 'light');
+
+        const sb = document.getElementById('statusBar');
+        const ch = document.getElementById('chatHeader');
+        const cv = document.getElementById('chatView');
+
+        sb.className = showBar ? 'status-bar' : 'status-bar hide-element';
+        ch.className = 'chat-header';
+
+        const subTheme = isDarkMode ? 'dark' : 'light';
+        
+        if (app === 'wa') {
+            sb.classList.add('st-wa-' + subTheme); ch.classList.add('hd-wa-' + subTheme); cv.className = 'cv-wa-' + subTheme;
+        } else if (app === 'ig') {
+            sb.classList.add('st-ig-' + subTheme); ch.classList.add('hd-ig-' + subTheme); cv.className = 'cv-ig-' + subTheme;
+        } else if (app === 'im') {
+            sb.classList.add('st-im-' + subTheme); ch.classList.add('hd-im-' + subTheme); cv.className = 'cv-im-' + subTheme;
+        } else if (app === 'po') {
+            sb.className = 'status-bar hide-element'; ch.className = 'chat-header hide-element'; cv.className = 'cv-po-' + subTheme;
+        }
+        updateChatLive();
+    }
+
+    function injectImageToScript() {
+        const fileInput = document.getElementById('chatImageInput');
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgId = `[image_${Object.keys(loadedChatImages).length + 1}]`;
+                loadedChatImages[imgId] = e.target.result;
+                document.getElementById('scriptInput').value += `\nA: ${imgId}`;
+                updateChatLive();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    }
+
+    function updateChatLive() {
+        const app = document.getElementById('appSelect').value;
+        const statusType = document.getElementById('statusTypeSelect').value;
+        const statusText = document.getElementById('statusTextInput').value;
+        const receipt = document.getElementById('receiptSelect').value;
+        const scriptText = document.getElementById('scriptInput').value;
+        const roomName = document.getElementById('chatRoomNameInput').value;
+        const cv = document.getElementById('chatView');
+
+        document.getElementById('headerTargetName').innerText = roomName || 'Lunarise Chat';
+
+        const mainAvatarElement = document.getElementById('mainAvatar');
+        
+        if(membersDB['B'] && membersDB['B'].avatar) {
+            mainAvatarElement.src = membersDB['B'].avatar;
+        } 
+        else {
+            const namaClean = roomName.trim();
+            let inisial = "CH";
+            if(namaClean.length > 0) {
+                const kata = namaClean.split(' ');
+                inisial = kata.length >= 2 ? (kata[0][0] + kata[1][0]).toUpperCase() : namaClean.substring(0, 2).toUpperCase();
+            }
+            mainAvatarElement.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><circle cx='50' cy='50' r='50' fill='%23007bff'/><text x='50%25' y='55%25' font-family='sans-serif' font-size='32' fill='white' text-anchor='middle' font-weight='bold'>${inisial}</text></svg>`;
+        }
+
+        let finalStatusStr = '';
+        if(statusType === 'online') finalStatusStr = 'Online';
+        else if(statusType === 'typing') finalStatusStr = 'Typing...';
+        else if(statusType === 'lastseen') finalStatusStr = 'terakhir dilihat ' + statusText;
+        document.getElementById('headerTargetStatus').innerText = finalStatusStr;
+
+        cv.innerHTML = '';
+
+        let checkIconHtml = '';
+        if(receipt === 'sent') checkIconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`;
+        else if(receipt === 'delivered') checkIconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 6L8.5 14.5L5 11M22 6l-8.5 8.5"/></svg>`;
+        else if(receipt === 'read') {
+            let colorCode = app === 'wa' ? '#53bdeb' : '#3797f0';
+            checkIconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${colorCode}" stroke-width="2.5"><path d="M17 6L8.5 14.5L5 11M22 6l-8.5 8.5"/></svg>`;
+        }
+
+        let receiptText = receipt === 'read' ? 'Seen' : (receipt === 'delivered' ? 'Delivered' : 'Sent');
+
+        // LOGIKA BARU: Parsing naskah dengan menggabungkan baris Threads yang tertekan Enter
+        const rawLines = scriptText.split('\n');
+        let lines = [];
+        let currentThreadsBlock = null;
+
+        rawLines.forEach(line => {
+            const trimmed = line.trim();
+            // Jika baris baru dimulai dengan T_ [Inisial]:
+            if (/^T_[A-Za-z0-9]+:/i.test(trimmed)) {
+                if (currentThreadsBlock) {
+                    lines.push(currentThreadsBlock);
+                }
+                currentThreadsBlock = line;
+            } else if (currentThreadsBlock !== null) {
+                // Jika sedang dalam blok Threads, enter baris baru tetap digabung ke dalam teks Threads yang sama
+                currentThreadsBlock += "\n" + line;
+                // Jika baris ini mengandung atribut akhir seperti [time:...], [like:...], anggap blok Threads selesai
+                if (/\[(time|like|reply|repost|img):/i.test(line)) {
+                    lines.push(currentThreadsBlock);
+                    currentThreadsBlock = null;
+                }
+            } else {
+                lines.push(line);
+            }
+        });
+        if (currentThreadsBlock) {
+            lines.push(currentThreadsBlock);
+        }
+
+        lines.forEach(line => {
+            if(!line.trim()) return;
+
+            // RENDER NARASI
+            if(line.toUpperCase().startsWith('N:')) {
+                let content = line.substring(2).trim();
+                const b = document.createElement('div');
+                if(content.startsWith('[system:') && content.endsWith(']')) {
+                    b.className = 'msg N sys-box';
+                    b.innerText = content.substring(8, content.length - 1);
+                } else {
+                    b.className = 'msg N';
+                    b.innerText = content;
+                }
+                cv.appendChild(b);
+                return;
+            }
+
+            // RENDER THREADS (Sintaks T_A:, T_B:, dst.)
+            if(line.toUpperCase().startsWith('T_')) {
+                const colonIndex = line.indexOf(':');
+                const actorKey = line.substring(2, colonIndex).trim().toUpperCase();
+                let rawMsgBody = line.substring(colonIndex + 1).trim();
+
+                const member = membersDB[actorKey] || {
+                    name: 'Unknown',
+                    threadsName: 'User Threads',
+                    username: '@user',
+                    verified: false,
+                    avatar: ''
+                };
+
+                let customTime = '1m';
+                let likes = '';
+                let replies = '';
+                let reposts = '';
+                let imgUrl = '';
+
+                const timeMatch = rawMsgBody.match(/\[time:(.*?)\]/i);
+                if(timeMatch) { customTime = timeMatch[1]; rawMsgBody = rawMsgBody.replace(timeMatch[0], '').trim(); }
+
+                const likeMatch = rawMsgBody.match(/\[like:(.*?)\]/i);
+                if(likeMatch) { likes = likeMatch[1]; rawMsgBody = rawMsgBody.replace(likeMatch[0], '').trim(); }
+
+                const replyMatch = rawMsgBody.match(/\[reply:(.*?)\]/i);
+                if(replyMatch) { replies = replyMatch[1]; rawMsgBody = rawMsgBody.replace(replyMatch[0], '').trim(); }
+
+                const repostMatch = rawMsgBody.match(/\[repost:(.*?)\]/i);
+                if(repostMatch) { reposts = repostMatch[1]; rawMsgBody = rawMsgBody.replace(repostMatch[0], '').trim(); }
+
+                const imgMatch = rawMsgBody.match(/\[img:(.*?)\]/i);
+                if(imgMatch) { imgUrl = imgMatch[1]; rawMsgBody = rawMsgBody.replace(imgMatch[0], '').trim(); }
+
+                let avatarSrc = member.avatar;
+                if(!avatarSrc) {
+                    const inisial = (member.threadsName || member.name).substring(0, 2).toUpperCase();
+                    avatarSrc = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><circle cx='50' cy='50' r='50' fill='%23000'/><text x='50%25' y='55%25' font-family='sans-serif' font-size='32' fill='white' text-anchor='middle' font-weight='bold'>${inisial}</text></svg>`;
+                }
+
+                const verifiedIcon = member.verified ? `<svg class="threads-verified-badge" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6 12.6l1.5-1.5 2.6 2.6 6.8-6.8 1.5 1.5-8.3 8.3z"/></svg>` : '';
+
+                const tCard = document.createElement('div');
+                tCard.className = 'threads-card';
+                tCard.innerHTML = `
+                    <div class="threads-avatar-col">
+                        <img class="threads-avatar" src="${avatarSrc}">
+                    </div>
+                    <div class="threads-content-col">
+                        <div class="threads-header">
+                            <div class="threads-user-info">
+                                <span class="threads-display-name">${member.threadsName || member.name}</span>
+                                ${verifiedIcon}
+                                <span class="threads-username">${member.username || '@user'}</span>
+                            </div>
+                            <span class="threads-time">${customTime}</span>
+                        </div>
+                        <div class="threads-body">${rawMsgBody}</div>
+                        ${imgUrl ? `<img class="threads-media" src="${imgUrl}">` : ''}
+                        <div class="threads-actions">
+                            <div class="threads-action-item">
+                                <svg class="threads-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>${likes}</span>
+                            </div>
+                            <div class="threads-action-item">
+                                <svg class="threads-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                                <span>${replies}</span>
+                            </div>
+                            <div class="threads-action-item">
+                                <svg class="threads-icon" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                                <span>${reposts}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cv.appendChild(tCard);
+                return;
+            }
+
+            // RENDER CHAT BIASA (Sintaks A:, B:, dst.)
+            const actorKey = line.split(':')[0].trim().toUpperCase();
+            let rawMsgBody = line.substring(line.indexOf(':') + 1).trim();
+            
+            let customTime = "12:00";
+            if(rawMsgBody.includes('[time:')) {
+                const timeMatch = rawMsgBody.match(/\[time:(.*?)\]/);
+                if(timeMatch) {
+                    customTime = timeMatch[1];
+                    rawMsgBody = rawMsgBody.replace(timeMatch[0], '').trim();
+                }
+            }
+
+            if(!membersDB[actorKey]) {
+                const b = document.createElement('div');
+                b.className = 'msg N'; b.innerText = line; cv.appendChild(b); return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'msg-wrapper';
+
+            const bubble = document.createElement('div');
+            bubble.className = `msg ${actorKey === 'A' ? 'A' : 'B'}`;
+
+            if(actorKey !== 'A' && Object.keys(membersDB).length > 2) {
+                const nameLabel = document.createElement('span');
+                nameLabel.className = 'msg-sender-name';
+                nameLabel.innerText = membersDB[actorKey].name;
+                wrapper.appendChild(nameLabel);
+            }
+
+            if(rawMsgBody.toLowerCase() === '[delete]') {
+                bubble.innerHTML = `<div class="msg-system-action"><span>🚫</span> <span>${actorKey === 'A' ? 'Anda telah menghapus pesan ini' : 'Pesan ini telah dihapus'}</span></div>`;
+            } 
+            else if(rawMsgBody.toLowerCase() === '[missed_call]') {
+                bubble.innerHTML = `<div class="msg-system-action" style="color:#ef4444;"><span>📞</span> <span>Panggilan tidak terjawab</span></div>`;
+            } 
+            else if(rawMsgBody.startsWith('[vn_') && rawMsgBody.endsWith(']')) {
+                const duration = rawMsgBody.substring(4, rawMsgBody.length - 1);
+                bubble.innerHTML = `<div class="vn-layout"><span class="vn-play-btn">▶️</span><div class="vn-wave"></div><span style="font-size:11px;opacity:0.7;">0:${duration}</span></div>`;
+            }
+            else if(rawMsgBody.startsWith('[location:') && rawMsgBody.endsWith(']')) {
+                const locName = rawMsgBody.substring(10, rawMsgBody.length - 1);
+                bubble.innerHTML = `<div class="map-layout"><div class="map-visual">📍</div><div class="map-desc">${locName}</div></div>`;
+            }
+            else if(rawMsgBody.startsWith('[image_') && rawMsgBody.endsWith(']')) {
+                const cleanTag = rawMsgBody.replace('_blur', '');
+                const srcImg = loadedChatImages[cleanTag];
+                const isBlur = rawMsgBody.includes('_blur');
+                if(srcImg) {
+                    bubble.innerHTML = `<img class="msg-img ${isBlur ? 'blur-effect' : ''}" src="${srcImg}">`;
+                } else {
+                    bubble.innerHTML = `<div style="font-style:italic;opacity:0.5;">[gambar_tidak_ditemukan]</div>`;
+                }
+            } 
+            else {
+                bubble.innerText = rawMsgBody;
+            }
+
+            if(app === 'wa') {
+                const meta = document.createElement('div');
+                meta.className = 'status-meta';
+                meta.innerHTML = `<span>${customTime}</span>`;
+                if(actorKey === 'A') meta.innerHTML += `<span>${checkIconHtml}</span>`;
+                bubble.appendChild(meta);
+            }
+
+            wrapper.appendChild(bubble);
+
+            if(actorKey === 'A' && (app === 'ig' || app === 'im')) {
+                const receiptContainer = document.createElement('span');
+                receiptContainer.className = 'app-status-receipt';
+                receiptContainer.innerText = receiptText;
+                wrapper.appendChild(receiptContainer);
+            }
+
+            cv.appendChild(wrapper);
+        });
+
+        cv.scrollTop = cv.scrollHeight;
+    }
+
+    function downloadHighResPNG() {
+        const area = document.querySelector("#captureArea");
+        html2canvas(area, { scale: 3, backgroundColor: null, useCORS: true, logging: false }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'lunarise-ultimate-' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
         }
         
         .brand-container { text-align: center; margin-bottom: 40px; }
