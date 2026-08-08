@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUNARISE ULTIMATE CHAT & THREADS ENGINE</title>
+    <title>Generator Social & Chat Studio</title>
+    <!-- Fonts & Libraries -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         :root {
             --blue-bright: #007bff;
@@ -62,9 +66,20 @@
         .btn-secondary { background: transparent; border: 1px solid var(--blue-bright); color: var(--blue-bright); padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; }
         .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
 
-        /* PREVIEW AREA & HP FRAME */
+        /* PREVIEW AREA & HP FRAME - KOTAK PRESIK TANPA SUDAH BUNDAR */
         .preview-wrapper { position: sticky; top: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        #captureArea { width: 360px; min-height: 580px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        #captureArea { 
+            width: 360px; 
+            min-height: 580px; 
+            background: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid #ddd; 
+            border-radius: 0px !important; /* DIBUAT KOTAK TEGAS TANPA LEKUKAN */
+            overflow: hidden; 
+            position: relative; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
 
         /* STATUS BAR HP */
         .status-bar { height: 30px; padding: 5px 18px 0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; letter-spacing: -0.2px; z-index: 10; }
@@ -162,6 +177,18 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--blue-bright); }
         input:checked + .slider:before { transform: translateX(20px); }
+
+        /* MODAL POPUP CROP AVATAR */
+        .crop-modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 9999; 
+        }
+        .crop-modal-box { 
+            background: var(--panel); color: var(--text-main); width: 90%; max-width: 450px; 
+            padding: 20px; border-radius: 16px; display: flex; flex-direction: column; gap: 16px; 
+        }
+        .crop-container-area { width: 100%; height: 300px; background: #000; overflow: hidden; }
+        .crop-modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
     </style>
 </head>
 <body>
@@ -308,9 +335,23 @@ N: Laras menutup ponselnya..."></textarea>
     </div>
 </div>
 
-<!-- DATALIST / PAPAN MENGAMBANG AUTOCOMPLETE UNTUK RIWAYAT NAMA & USERNAME -->
+<!-- DATALIST / PAPAN MENGAMBANG AUTOCOMPLETE -->
 <datalist id="savedNamesList"></datalist>
 <datalist id="savedUsernamesList"></datalist>
+
+<!-- MODAL CROP AVATAR POPUP -->
+<div class="crop-modal-overlay" id="cropModalOverlay">
+    <div class="crop-modal-box">
+        <h4 style="margin:0; font-family:'Poppins';">Atur / Crop Avatar Karakter</h4>
+        <div class="crop-container-area">
+            <img id="cropImageTarget" style="max-width: 100%; display: block;">
+        </div>
+        <div class="crop-modal-actions">
+            <button class="btn-secondary" onclick="closeCropModal()">Batal</button>
+            <button class="btn-primary" onclick="applyCroppedAvatar()">Simpan Crop</button>
+        </div>
+    </div>
+</div>
 
 <script>
 let loadedChatImages = {};
@@ -319,12 +360,15 @@ let membersDB = {
     'B': { name: 'Budi', threadsName: 'Budi Santoso', username: '@budisantoso', verified: false, avatar: '' }
 };
 
+let cropperInstance = null;
+let currentCropTargetKey = null;
+
 window.onload = function() {
     renderMemberPanelUI();
     applyGlobalTheme();
     updateLiveClock();
     setInterval(updateLiveClock, 1000);
-    loadNameHistory(); // Memuat papan mengambang otomatis
+    loadNameHistory();
 };
 
 function updateLiveClock() {
@@ -334,7 +378,7 @@ function updateLiveClock() {
     document.getElementById('currentTime').innerText = `${hours}:${minutes}`;
 }
 
-// MANAGEMENT PAPAN MENGAMBANG (AUTOCOMPLETE / HISTORY)
+// MANAGEMENT PAPAN MENGAMBANG
 function saveNameToHistory(value, type) {
     if (!value || value.trim() === '') return;
     const storageKey = type === 'names' ? 'history_names' : 'history_usernames';
@@ -393,7 +437,7 @@ function renderMemberPanelUI() {
             <div class="member-row-top">
                 <b style="width:20px; color:var(--blue-bright);">${key}:</b>
                 <input type="text" list="savedNamesList" placeholder="Nama Chat" value="${membersDB[key].name}" oninput="updateMemberData('${key}', 'name', this.value)" onchange="saveNameToHistory(this.value, 'names')">
-                <input type="file" accept="image/*" style="display:none" id="file-${key}" onchange="updateMemberAvatar('${key}', this)">
+                <input type="file" accept="image/*" style="display:none" id="file-${key}" onchange="openCropModalForMember('${key}', this)">
                 <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('file-${key}').click()">Avatar</button>
             </div>
             <div class="member-row-bottom">
@@ -429,15 +473,47 @@ function updateMemberData(key, field, val) {
     updateChatLive();
 }
 
-function updateMemberAvatar(key, input) {
+// LOGIKA MANUAL CROP AVATAR
+function openCropModalForMember(key, input) {
     if (input.files && input.files[0]) {
+        currentCropTargetKey = key;
         const reader = new FileReader();
         reader.onload = function(e) {
-            membersDB[key].avatar = e.target.result;
-            updateChatLive();
+            const cropImg = document.getElementById('cropImageTarget');
+            cropImg.src = e.target.result;
+            
+            document.getElementById('cropModalOverlay').style.display = 'flex';
+            
+            if (cropperInstance) {
+                cropperInstance.destroy();
+            }
+            
+            cropperInstance = new Cropper(cropImg, {
+                aspectRatio: 1, // Rasio 1:1 Lingkaran/Kotak Avatar
+                viewMode: 1,
+                autoCropArea: 0.9,
+            });
+            input.value = ''; // Reset input
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+function closeCropModal() {
+    document.getElementById('cropModalOverlay').style.display = 'none';
+    if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+    }
+}
+
+function applyCroppedAvatar() {
+    if (!cropperInstance || !currentCropTargetKey) return;
+    const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+    const base64Avatar = canvas.toDataURL('image/png');
+    membersDB[currentCropTargetKey].avatar = base64Avatar;
+    closeCropModal();
+    updateChatLive();
 }
 
 function renderStatusField() {
@@ -494,7 +570,7 @@ function injectImageToScript() {
     }
 }
 
-// LOGIKA UTAMA PARSER NASKAH (WA + THREADS ATAS-BAWAH ATAS SATU STREAM)
+// LOGIKA UTAMA PARSER NASKAH
 function updateChatLive() {
     const app = document.getElementById('appSelect').value;
     const statusType = document.getElementById('statusTypeSelect').value;
@@ -537,7 +613,6 @@ function updateChatLive() {
 
     let receiptText = receipt === 'read' ? 'Seen' : (receipt === 'delivered' ? 'Delivered' : 'Sent');
 
-    // MENGGABUNGKAN PARSING MULTILINE BERBASED REGEX
     const rawLines = scriptText.split(/\r?\n/);
 
     rawLines.forEach((line) => {
@@ -620,7 +695,7 @@ function updateChatLive() {
             return;
         }
 
-        // 3. PARSER CHAT ORDINARY (A:, B:, C:, dst.)
+        // 3. PARSER CHAT ORDINARY
         if (/^[A-Za-z0-9]+\s*:/i.test(trimmed)) {
             const colonIndex = trimmed.indexOf(':');
             const actorKey = trimmed.substring(0, colonIndex).trim().toUpperCase();
